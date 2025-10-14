@@ -26,6 +26,9 @@ struct ElevatorView: View {
                     simulationLogs
                 }
             }
+            .transaction { transaction in
+                transaction.animation = nil
+            }
             .navigationTitle("Elevator Simulator")
         }
         .onAppear() {

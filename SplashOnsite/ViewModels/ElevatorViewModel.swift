@@ -37,13 +37,11 @@ class ElevatorViewModel {
         guard let url = URL(string: "\(EndpointConstants.baseURL)\(EndpointConstants.controllers)") else {
             return
         }
-                     
+        
         do {
-            if let data = try? await networkService.fetchData(from: url) {
-                let fetchedController = try JSONDecoder().decode(ControllerModel.self, from: data)
-                print(fetchedController.available)
-                controller = fetchedController
-            }
+            let fetchedController: ControllerModel = try await networkService.request(.get, url: url, body: nil as String?)
+            print(fetchedController.available)
+            controller = fetchedController
         } catch {
             print(error)
         }
@@ -55,11 +53,9 @@ class ElevatorViewModel {
         }
         
         do {
-            if let data = try? await networkService.fetchData(from: url) {
-                let fetchedScenario = try JSONDecoder().decode(ScenarioModel.self, from: data)
-                print(fetchedScenario.available)
-                scenario = fetchedScenario
-            }
+            let fetchedScenario: ScenarioModel = try await networkService.request(.get, url: url, body: nil as String?)
+            print(fetchedScenario.available)
+            scenario = fetchedScenario
         } catch {
             print(error)
         }

@@ -9,6 +9,5 @@ import Foundation
 
 @Observable
 class AppState {
-    
-    
+    // Not Utilized at this time - will a full implementation probably would utilize this and have the elevator state here
 }

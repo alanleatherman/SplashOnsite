@@ -5,7 +5,7 @@
 //  Created by Alan Leatherman on 10/14/25.
 //
 
-/*
+/* JSON GET /scenarios
  {
     "available":[
        {
@@ -27,10 +27,3 @@
 struct ScenarioModel: Codable {
     var available: [[String: String]]
 }
-
-/*
- struct ScenarioEventModel: Codable {
- var name: String
- var description: String
- }
- */

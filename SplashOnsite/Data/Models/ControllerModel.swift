@@ -5,22 +5,10 @@
 //  Created by Alan Leatherman on 10/14/25.
 //
 
-/*
- type GetControllersDescription struct {
-     Name string
- }
-
- type GetControllersReply struct {
-     Available []GetControllersDescription `json:"available"`
- }
- 
+/* JSON for GET /controllers
  {"available":[{"Name":"queue"}]}
- 
  */
 
 struct ControllerModel: Codable {
     var available: [[String: String]]
 }
-
-
-
