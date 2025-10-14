@@ -19,6 +19,7 @@ class ElevatorViewModel {
     var currentTick = 0
     var totalPoints = 0
     var logs: [String] = []
+    var buildingState = BuildingState()
     
     private var processedEventCount = 0
     private var networkService: NetworkService
@@ -67,6 +68,7 @@ class ElevatorViewModel {
     func startSimulation(scenario: String?, controller: String?) async {
         isSimulating = true
         isCompleted = false
+        buildingState = BuildingState()
         currentTick = 0
         processedEventCount = 0
         totalPoints = 0
@@ -100,6 +102,7 @@ class ElevatorViewModel {
             if let events = sessionEvents?.events {
                 let newEvents = events.dropFirst(processedEventCount)
                 for event in newEvents {
+                    updateBuildingState(event: event)
                     if event.eventType == "ActorFinished", let points = event.points {
                         totalPoints += points
                     }
@@ -212,5 +215,40 @@ class ElevatorViewModel {
             break
         }
         return "\(event.eventType)"
+    }
+    
+    private func updateBuildingState(event: SessionEvent) {
+        switch event.eventType {
+        case "InformElevator":
+            if let elevatorID = event.elevator {
+                if buildingState.elevators[elevatorID] == nil {
+                    buildingState.elevators[elevatorID] = ElevatorState()
+                }
+            }
+        case "InformFloor":
+            if let floor = event.floor, !buildingState.floors.contains(floor) {
+                buildingState.floors.append(floor)
+                buildingState.floors.sort()
+            }
+        case "ElevatorCalled":
+            if let floor = event.floor {
+                for i in buildingState.elevators.keys {
+                    buildingState.elevators[i]?.calledFloors.insert(floor)
+                }
+            }
+        case "ElevatorFloorRequest":
+            if let elevatorID = event.elevator, let floor = event.floor {
+                buildingState.elevators[elevatorID]?.requestedFloors.insert(floor)
+                let currentFloor = buildingState.elevators[elevatorID]?.currentFloor ?? 0
+                buildingState.elevators[elevatorID]?.calledFloors.remove(currentFloor)
+            }
+        case "ElevatorArrived":
+            if let elevatorID = event.elevator, let floor = event.floor {
+                buildingState.elevators[elevatorID]?.currentFloor = floor
+                buildingState.elevators[elevatorID]?.requestedFloors.remove(floor)
+            }
+        default:
+            break
+        }
     }
 }

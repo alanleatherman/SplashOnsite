@@ -22,6 +22,7 @@ struct ElevatorView: View {
                     controllerSelection
                     startButton
                     simulationStatus
+                    elevatorVisualization
                     simulationLogs
                 }
             }
@@ -203,6 +204,151 @@ struct ElevatorView: View {
                     .cornerRadius(8)
                 }
                 .frame(maxHeight: 300)
+            }
+            .padding()
+        }
+    }
+    
+    // MARK: - Elevator Visualization
+    @ViewBuilder
+    private var elevatorVisualization: some View {
+        if let buildingState = vm?.buildingState, vm?.isSimulating == true || (vm?.totalPoints ?? 0) > 0 {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Building View")
+                    .font(.headline)
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 30) {
+                        ForEach(Array(buildingState.elevators.keys.sorted()), id: \.self) { elevatorID in
+                            if let elevator = buildingState.elevators[elevatorID] {
+                                VStack(spacing: 0) {
+                                    Text("Elevator \(elevatorID)")
+                                        .font(.subheadline)
+                                        .fontWeight(.bold)
+                                        .padding(.bottom, 12)
+                                    
+                                    VStack(spacing: 6) {
+                                        ForEach(buildingState.floors.reversed(), id: \.self) { floor in
+                                            HStack(spacing: 12) {
+                                                // Floor number
+                                                Text("Floor \(floor)")
+                                                    .font(.subheadline)
+                                                    .fontWeight(.semibold)
+                                                    .frame(width: 60, alignment: .trailing)
+                                                    .foregroundStyle(elevator.currentFloor == floor ? .blue : .primary)
+                                                
+                                                // Elevator shaft
+                                                ZStack {
+                                                    Rectangle()
+                                                        .fill(Color.gray.opacity(0.15))
+                                                        .frame(width: 120, height: 60)
+                                                        .overlay(
+                                                            Rectangle()
+                                                                .stroke(Color.gray.opacity(0.4), lineWidth: 2)
+                                                        )
+                                                    
+                                                    // Elevator car with animation
+                                                    if elevator.currentFloor == floor {
+                                                        RoundedRectangle(cornerRadius: 6)
+                                                            .fill(
+                                                                LinearGradient(
+                                                                    colors: [Color.blue, Color.blue.opacity(0.8)],
+                                                                    startPoint: .top,
+                                                                    endPoint: .bottom
+                                                                )
+                                                            )
+                                                            .frame(width: 100, height: 50)
+                                                            .overlay(
+                                                                VStack(spacing: 2) {
+                                                                    Image(systemName: "arrow.up.arrow.down")
+                                                                        .foregroundColor(.white)
+                                                                        .font(.title3)
+                                                                    Text("🚪")
+                                                                        .font(.caption)
+                                                                }
+                                                            )
+                                                            .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                                                            .transition(.scale.combined(with: .opacity))
+                                                            .animation(.spring(response: 0.4, dampingFraction: 0.7), value: elevator.currentFloor)
+                                                    }
+                                                }
+                                                
+                                                // Floor status indicators
+                                                HStack(spacing: 8) {
+                                                    if elevator.calledFloors.contains(floor) {
+                                                        VStack(spacing: 2) {
+                                                            Image(systemName: "bell.fill")
+                                                                .foregroundColor(.orange)
+                                                                .font(.body)
+                                                            Text("Called")
+                                                                .font(.caption2)
+                                                                .foregroundColor(.orange)
+                                                        }
+                                                        .padding(6)
+                                                        .background(Color.orange.opacity(0.1))
+                                                        .cornerRadius(6)
+                                                        .transition(.scale.combined(with: .opacity))
+                                                    }
+                                                    if elevator.requestedFloors.contains(floor) {
+                                                        VStack(spacing: 2) {
+                                                            Image(systemName: "arrow.left.circle.fill")
+                                                                .foregroundColor(.green)
+                                                                .font(.body)
+                                                            Text("Going")
+                                                                .font(.caption2)
+                                                                .foregroundColor(.green)
+                                                        }
+                                                        .padding(6)
+                                                        .background(Color.green.opacity(0.1))
+                                                        .cornerRadius(6)
+                                                        .transition(.scale.combined(with: .opacity))
+                                                    }
+                                                }
+                                                .frame(width: 80, alignment: .leading)
+                                                .animation(.spring(response: 0.3, dampingFraction: 0.8), value: elevator.calledFloors)
+                                                .animation(.spring(response: 0.3, dampingFraction: 0.8), value: elevator.requestedFloors)
+                                            }
+                                        }
+                                    }
+                                }
+                                .padding()
+                                .background(Color.gray.opacity(0.05))
+                                .cornerRadius(12)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                
+                // Legend
+                HStack(spacing: 20) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "bell.fill")
+                            .foregroundColor(.orange)
+                            .font(.body)
+                        Text("Floor Called")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                    }
+                    HStack(spacing: 6) {
+                        Image(systemName: "arrow.left.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.body)
+                        Text("Destination")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                    }
+                    HStack(spacing: 6) {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(Color.blue)
+                            .frame(width: 30, height: 16)
+                        Text("Elevator Position")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                    }
+                }
+                .padding(.top, 8)
+                .padding(.horizontal)
             }
             .padding()
         }
