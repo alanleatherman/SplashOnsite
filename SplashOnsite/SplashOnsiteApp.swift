@@ -27,7 +27,7 @@ struct SplashOnsiteApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ElevatorView()
                 .inject(getAppContainer())
         }
         .modelContainer(sharedModelContainer)
