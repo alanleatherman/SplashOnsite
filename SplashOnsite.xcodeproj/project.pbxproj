@@ -40,11 +40,6 @@
 			path = SplashOnsiteTests;
 			sourceTree = "<group>";
 		};
-		FFA512202E9EA2C200B8E8AA /* SplashOnsiteUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SplashOnsiteUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +72,6 @@
 			children = (
 				FFA512062E9EA2C000B8E8AA /* SplashOnsite */,
 				FFA512162E9EA2C200B8E8AA /* SplashOnsiteTests */,
-				FFA512202E9EA2C200B8E8AA /* SplashOnsiteUITests */,
 				FFA512052E9EA2C000B8E8AA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -152,9 +146,6 @@
 			);
 			dependencies = (
 				FFA5121F2E9EA2C200B8E8AA /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				FFA512202E9EA2C200B8E8AA /* SplashOnsiteUITests */,
 			);
 			name = SplashOnsiteUITests;
 			packageProductDependencies = (

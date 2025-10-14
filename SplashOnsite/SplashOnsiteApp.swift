@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct SplashOnsiteApp: App {
+    @State private var appContainer: AppContainer?
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -26,7 +28,18 @@ struct SplashOnsiteApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .inject(getAppContainer())
         }
         .modelContainer(sharedModelContainer)
+    }
+    
+    private func getAppContainer() -> AppContainer {
+        if let container = appContainer {
+            return container
+        }
+        
+        let container = AppEnvironment.bootstrap().appContainer
+        appContainer = container
+        return container
     }
 }
