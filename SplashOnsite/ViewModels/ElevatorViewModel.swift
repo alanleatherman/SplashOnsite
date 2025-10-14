@@ -121,6 +121,7 @@ class ElevatorViewModel {
                 logs.append("*** Simulation completed! Total points: \(totalPoints)")
                 isSimulating = false
                 isCompleted = true
+                clearPendingRequests()
                 break
             }
             currentTick += 1
@@ -132,6 +133,7 @@ class ElevatorViewModel {
             if currentTick > 100 {
                 logs.append("Simulation completed (max ticks reached)")
                 isSimulating = false
+                clearPendingRequests()
                 isCompleted = true
             }
         }
@@ -249,6 +251,13 @@ class ElevatorViewModel {
             }
         default:
             break
+        }
+    }
+    
+    private func clearPendingRequests() {
+        for elevatorID in buildingState.elevators.keys {
+            buildingState.elevators[elevatorID]?.calledFloors.removeAll()
+            buildingState.elevators[elevatorID]?.requestedFloors.removeAll()
         }
     }
 }
